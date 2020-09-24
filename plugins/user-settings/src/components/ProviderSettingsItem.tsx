@@ -58,7 +58,7 @@ export const ProviderSettingsItem = ({
           arrow
           title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
         >
-          <PowerButton />
+          <PowerButton color={signedIn ? 'primary' : undefined} />
         </Tooltip>
       </ToggleButton>
     </ListItemSecondaryAction>
