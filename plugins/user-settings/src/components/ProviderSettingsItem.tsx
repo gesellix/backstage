@@ -28,6 +28,7 @@ import { ToggleButton } from '@material-ui/lab';
 
 type Props = {
   title: string;
+  description: string;
   icon: IconComponent;
   signedIn: boolean;
   api: OAuthApi | OpenIdConnectApi;
@@ -36,6 +37,7 @@ type Props = {
 
 export const ProviderSettingsItem = ({
   title,
+  description,
   icon: Icon,
   signedIn,
   api,
@@ -45,22 +47,30 @@ export const ProviderSettingsItem = ({
     <ListItemIcon>
       <Icon />
     </ListItemIcon>
-    <ListItemText primary={title} />
+    <ListItemText
+      primary={title}
+      secondary={
+        <Tooltip placement="top" arrow title={description}>
+          <span>{description}</span>
+        </Tooltip>
+      }
+      secondaryTypographyProps={{ noWrap: true, style: { width: '80%' } }}
+    />
     <ListItemSecondaryAction>
-      <ToggleButton
-        size="small"
-        value={title}
-        selected={signedIn}
-        onChange={() => (signedIn ? api.logout() : signInHandler())}
+      <Tooltip
+        placement="top"
+        arrow
+        title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
       >
-        <Tooltip
-          placement="top"
-          arrow
-          title={signedIn ? `Sign out from ${title}` : `Sign in to ${title}`}
+        <ToggleButton
+          size="small"
+          value={title}
+          selected={signedIn}
+          onChange={() => (signedIn ? api.logout() : signInHandler())}
         >
           <PowerButton color={signedIn ? 'primary' : undefined} />
-        </Tooltip>
-      </ToggleButton>
+        </ToggleButton>
+      </Tooltip>
     </ListItemSecondaryAction>
   </ListItem>
 );
