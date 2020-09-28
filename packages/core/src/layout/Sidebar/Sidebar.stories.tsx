@@ -22,14 +22,22 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-  SidebarUserSettings,
-  OAuthProviderSettings,
 } from '.';
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import Star from '@material-ui/icons/Star';
 import { MemoryRouter } from 'react-router-dom';
-import { githubAuthApiRef } from '@backstage/core-api';
+import {
+  ApiProvider,
+  ApiRegistry,
+  appThemeApiRef,
+  AppThemeSelector,
+  configApiRef,
+  ConfigReader,
+  FeatureFlags,
+  featureFlagsApiRef,
+} from '@backstage/core-api';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { UserSettings } from '@backstage/plugin-user-settings';
 
 export default {
   title: 'Sidebar',
@@ -57,15 +65,45 @@ export const SampleSidebar = () => (
     <SidebarDivider />
     <SidebarIntro />
     <SidebarSpace />
+  </Sidebar>
+);
+
+const createConfig = () =>
+  ConfigReader.fromConfigs([
+    {
+      context: '',
+      data: {
+        auth: {
+          providers: {
+            google: { development: {} },
+          },
+        },
+      },
+    },
+  ]);
+
+const config = createConfig();
+
+const apis = ApiRegistry.from([
+  [configApiRef, config],
+  [featureFlagsApiRef, new FeatureFlags()],
+  [appThemeApiRef, AppThemeSelector.createWithStorage([])],
+]);
+
+export const WithUserSettingsPlugin = () => (
+  <Sidebar>
+    {/* <SidebarLogo /> */}
+    <SidebarSearchField onSearch={handleSearch} />
     <SidebarDivider />
-    <SidebarUserSettings
-      providerSettings={
-        <OAuthProviderSettings
-          title="Github"
-          apiRef={githubAuthApiRef}
-          icon={Star}
-        />
-      }
-    />
+    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Home" />
+    <SidebarItem icon={HomeOutlinedIcon} to="#" text="Plugins" />
+    <SidebarItem icon={AddCircleOutlineIcon} to="#" text="Create..." />
+    <SidebarDivider />
+    <SidebarIntro />
+    <SidebarSpace />
+    <SidebarDivider />
+    <ApiProvider apis={apis}>
+      <UserSettings />
+    </ApiProvider>
   </Sidebar>
 );
